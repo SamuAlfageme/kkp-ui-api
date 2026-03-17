@@ -27,6 +27,8 @@ export class CheckTokenInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (!this.auth.authenticated()) {
+      const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+      this.auth.rememberRedirectPath(currentPath || this.router.url);
       this.router.navigate(['']);
     }
 

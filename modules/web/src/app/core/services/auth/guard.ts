@@ -40,12 +40,13 @@ export class AdminGuard implements CanActivate {
 export class AuthGuard implements CanActivate {
   constructor(private auth: Auth) {}
 
-  canActivate(_route: ActivatedRouteSnapshot, _snap: RouterStateSnapshot): boolean {
+  canActivate(_route: ActivatedRouteSnapshot, snap: RouterStateSnapshot): boolean {
     if (this.auth.authenticated()) {
       return true;
     }
 
-    window.location.href = this.auth.getOIDCProviderURL();
+    const requestedPath = `${window.location.pathname}${window.location.search}${window.location.hash}` || snap.url;
+    window.location.href = this.auth.getOIDCProviderURL(requestedPath);
     return false;
   }
 }

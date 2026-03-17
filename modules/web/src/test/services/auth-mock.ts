@@ -19,7 +19,7 @@ import {Observable, of} from 'rxjs';
 export class AuthMockService {
   isAuth = true;
 
-  getOIDCProviderURL(): string {
+  getOIDCProviderURL(_requestedPath?: string): string {
     return '';
   }
 
@@ -42,4 +42,6 @@ export class AuthMockService {
   oidcProviderLogout(): void {}
 
   setNonce(): void {}
+
+  rememberRedirectPath(_path: string): void {}
 }
