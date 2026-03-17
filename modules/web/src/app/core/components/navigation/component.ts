@@ -50,6 +50,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
   showSidenav = true;
   currentView: string;
   logoUrl: string;
+  environmentLabel?: string;
   shouldInvertLogo = false;
 
   constructor(
@@ -64,6 +65,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
     this._brandingService.shouldInvertLogo$
       .pipe(takeUntil(this._unsubscribe))
       .subscribe(invert => (this.shouldInvertLogo = invert));
+    this.environmentLabel = this._brandingService.getEnvironmentLabel();
 
     merge(of(true), this._onSettingsChange)
       .pipe(switchMapTo(this._userService.currentUserSettings))

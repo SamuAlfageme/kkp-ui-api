@@ -30,6 +30,7 @@ export interface BrandingColors {
 export interface BrandingConfig {
   product_name?: string;
   tagline?: string;
+  environment_label?: string;
   postfix_page_title?: string;
   logo_url?: string;
   logo_dark_url?: string;

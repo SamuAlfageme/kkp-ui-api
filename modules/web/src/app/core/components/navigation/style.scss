@@ -27,14 +27,20 @@ header {
   z-index: 999;
 
   .km-header-logo {
-    display: block;
+    align-items: center;
+    display: inline-flex;
+    gap: 8px;
     height: 30px;
     margin-left: variables.$content-padding - 10px;
-    width: 210px;
+    width: auto;
 
     &.km-logo-invert {
       filter: invert(0.25) brightness(100) contrast(100);
       opacity: 85%;
+    }
+
+    &.km-header-logo-border {
+      padding-right: 16px;
     }
   }
 
@@ -45,10 +51,23 @@ header {
     width: auto;
   }
 
+  .km-header-env-indicator {
+    border: 1px solid var(--km-color-header-text, rgba(255, 255, 255, 0.8));
+    border-radius: 10px;
+    color: var(--km-color-header-text, rgba(255, 255, 255, 0.9));
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    padding: 2px 8px;
+    text-transform: lowercase;
+    white-space: nowrap;
+  }
+
   .view-name {
     font-size: variables.$font-size-subhead-lg;
     font-weight: normal;
-    margin-left: 20px;
+    margin-left: 16px;
   }
 }
 

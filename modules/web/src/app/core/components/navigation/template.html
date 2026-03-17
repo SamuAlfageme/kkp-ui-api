@@ -31,6 +31,9 @@ limitations under the License.
       <img [src]="logoUrl"
            alt=""
            class="km-header-logo-img">
+      @if (environmentLabel) {
+      <span class="km-header-env-indicator">{{environmentLabel}}</span>
+      }
     </a>
     <div class="km-text view-name">{{currentView}}</div>
     @if (isAuthenticated() && showMenuSwitchAndProjectSelector) {

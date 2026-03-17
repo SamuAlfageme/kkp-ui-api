@@ -59,6 +59,11 @@ export class BrandingService {
     return this._config.tagline || DEFAULTS.tagline;
   }
 
+  getEnvironmentLabel(): string | undefined {
+    const label = this._config.environment_label?.trim();
+    return label ? label : undefined;
+  }
+
   get hideVersion(): boolean {
     return !!this._config.hide_version;
   }
