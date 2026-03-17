@@ -33,6 +33,8 @@ export class Auth {
   private readonly _clientId = 'kubermatic';
   private readonly _defaultScope = 'openid email profile groups';
   private readonly _redirectUri = window.location.protocol + '//' + window.location.host + '/projects';
+  private readonly _fallbackRedirectPath = '/projects';
+  private readonly _redirectStorageKey = 'oidc_redirect_path';
   private readonly _maxCookieSize = 4000;
 
   constructor(
@@ -47,10 +49,12 @@ export class Auth {
     const nonce = this.getNonce();
     if (!!token && !!nonce) {
       if (this.compareNonceWithToken(token, nonce)) {
+        const redirectPath = this._getRedirectPathFromState() || this._getStoredRedirectPath();
         // remove URL fragment with token, so that users can't accidentally copy&paste it and send it to others
         this._removeFragment();
         this._tokenService.token = token;
         this._setTokenCookies(token);
+        this._redirectToRequestedPath(redirectPath);
       }
       this._previousRouteService.loadRouting();
     } else {
@@ -58,7 +62,7 @@ export class Auth {
     }
   }
 
-  getOIDCProviderURL(): string {
+  getOIDCProviderURL(requestedPath?: string): string {
     const config = this._appConfigService.getConfig();
     const baseUrl = config.oidc_provider_url ? config.oidc_provider_url : environment.oidcProviderUrl;
     const connectorId = config.oidc_connector_id ? config.oidc_connector_id : environment.oidcConnectorId;
@@ -68,6 +72,15 @@ export class Auth {
     let url =
       `${baseUrl}?response_type=${this._responseType}&client_id=${clientId}` +
       `&redirect_uri=${this._redirectUri}&scope=${scope}&nonce=${this._nonce}`;
+    const safePath = this._resolveRedirectPath(requestedPath);
+    if (safePath) {
+      this._setStoredRedirectPath(safePath);
+    }
+
+    const state = this._createState(safePath);
+    if (state) {
+      url += `&state=${state}`;
+    }
 
     if (connectorId) {
       url += `&connector_id=${connectorId}`;
@@ -109,6 +122,13 @@ export class Auth {
 
   login(): void {
     this._cookieService.set(this._cookie.autoredirect, 'true', 1, '/', null, false, 'Strict');
+  }
+
+  rememberRedirectPath(path: string): void {
+    const safePath = this._toSafePath(path);
+    if (safePath && safePath !== '/') {
+      this._setStoredRedirectPath(safePath);
+    }
   }
 
   logout(): Observable<boolean> {
@@ -208,7 +228,119 @@ export class Auth {
 
   private _removeFragment(): void {
     const currentHref = window.location.href;
-    history.replaceState({}, '', currentHref.slice(0, currentHref.indexOf('#')));
+    const hashIndex = currentHref.indexOf('#');
+    if (hashIndex === -1) {
+      return;
+    }
+
+    history.replaceState({}, '', currentHref.slice(0, hashIndex));
+  }
+
+  private _createState(requestedPath: string): string {
+    const safePath = this._toSafePath(requestedPath);
+    if (!safePath) {
+      return '';
+    }
+
+    const payload = JSON.stringify({redirectPath: safePath});
+    return encodeURIComponent(window.btoa(payload));
+  }
+
+  private _getRedirectPathFromState(): string {
+    const state = this._getStateFromQuery();
+    if (!state) {
+      return '';
+    }
+
+    try {
+      const decoded = window.atob(decodeURIComponent(state));
+      const parsedState = JSON.parse(decoded);
+      return this._toSafePath(parsedState?.redirectPath) ?? '';
+    } catch (_error) {
+      return '';
+    }
+  }
+
+  private _getStateFromQuery(): string {
+    const results = new RegExp('[?&#]state=([^&#]*)').exec(window.location.href);
+    return results === null ? '' : results[1] || '';
+  }
+
+  private _redirectToRequestedPath(path: string): void {
+    if (!path) {
+      return;
+    }
+
+    this._clearStoredRedirectPath();
+
+    const currentPath = `${window.location.pathname}${window.location.search}`;
+    if (path !== currentPath) {
+      window.location.replace(path);
+    }
+  }
+
+  private _toSafePath(path: string): string | null {
+    if (!path || !path.startsWith('/') || path.startsWith('//')) {
+      return null;
+    }
+
+    try {
+      const normalized = new URL(path, window.location.origin);
+      if (normalized.origin !== window.location.origin) {
+        return null;
+      }
+
+      return `${normalized.pathname}${normalized.search}${normalized.hash}`;
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  private _getCurrentPath(): string {
+    return `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  }
+
+  private _resolveRedirectPath(requestedPath?: string): string {
+    const explicitPath = this._toSafePath(requestedPath);
+    if (explicitPath && explicitPath !== '/') {
+      return explicitPath;
+    }
+
+    const storedPath = this._getStoredRedirectPath();
+    if (storedPath && storedPath !== '/') {
+      return storedPath;
+    }
+
+    const currentPath = this._toSafePath(this._getCurrentPath());
+    if (currentPath && currentPath !== '/') {
+      return currentPath;
+    }
+
+    return explicitPath || storedPath || currentPath || this._fallbackRedirectPath;
+  }
+
+  private _setStoredRedirectPath(path: string): void {
+    try {
+      window.sessionStorage.setItem(this._redirectStorageKey, path);
+    } catch (_error) {
+      // Ignore session storage errors and continue with state-only redirect.
+    }
+  }
+
+  private _getStoredRedirectPath(): string {
+    try {
+      return this._toSafePath(window.sessionStorage.getItem(this._redirectStorageKey)) ?? '';
+    } catch (_error) {
+      return '';
+    }
+  }
+
+  private _clearStoredRedirectPath(): void {
+    try {
+      window.sessionStorage.removeItem(this._redirectStorageKey);
+    } catch (_error) {
+      // Ignore session storage errors.
+    }
   }
 
   private _setCookie(cookieName: string, value: string) {
