@@ -49,6 +49,7 @@ export class OpenstackMachineTypeSelectorComponent implements OnInit, OnChanges,
   @Input() required = false;
   @Input() isLoading = false;
   @Input() selectedMachineType = '';
+  @Input() hideDiskColumn = false;
 
   searchQuery = '';
 
@@ -120,6 +121,10 @@ export class OpenstackMachineTypeSelectorComponent implements OnInit, OnChanges,
   }
 
   private _updateDisplayedColumns(): void {
-    this.displayedColumns = [Column.Select, Column.Name, Column.VCPUs, Column.MemoryGB, Column.Disk];
+    this.displayedColumns = [Column.Select, Column.Name, Column.VCPUs, Column.MemoryGB];
+
+    if (!this.hideDiskColumn) {
+      this.displayedColumns.push(Column.Disk);
+    }
   }
 }

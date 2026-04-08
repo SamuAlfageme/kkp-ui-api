@@ -113,6 +113,7 @@ export class OpenstackBasicNodeDataComponent extends BaseFormValidator implement
   serverGroupLabel = ServerGroupState.Empty;
   isEnterpriseEdition = DynamicModule.isEnterpriseEdition;
   isInWizardMode: boolean;
+  hideFlavorDiskColumn = false;
 
   private _quotaCalculationService: QuotaCalculationService;
 
@@ -205,6 +206,8 @@ export class OpenstackBasicNodeDataComponent extends BaseFormValidator implement
       .subscribe(this._setDefaultImage.bind(this));
 
     this._settingsService.adminSettings.pipe(takeUntil(this._unsubscribe)).subscribe(settings => {
+      this.hideFlavorDiskColumn = !!settings.providerConfiguration?.openStack?.enforceCustomDisk;
+
       if (settings.providerConfiguration?.openStack?.enforceCustomDisk) {
         this.form.get(Controls.UseCustomDisk).setValue(true);
         this.form.get(Controls.UseCustomDisk).disable();
@@ -215,6 +218,8 @@ export class OpenstackBasicNodeDataComponent extends BaseFormValidator implement
         this.form.get(Controls.CustomDiskSize).clearValidators();
         this.form.get(Controls.UseCustomDisk).setValue(false);
       }
+
+      this._cdr.markForCheck();
     });
   }
 
