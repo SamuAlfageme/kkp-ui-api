@@ -32,6 +32,7 @@ export class SideNavExpansionMenuComponent implements AfterViewChecked, OnInit {
   readonly adminPanelView = AdminPanelView;
   readonly adminPanelSections = AdminPanelSections;
   @Input() icon = '';
+  @Input() infoTooltip = '';
   @Input() isSidenavCollapsed: boolean;
   @Input() lastItem = false;
 

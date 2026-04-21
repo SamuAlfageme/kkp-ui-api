@@ -163,6 +163,7 @@ limitations under the License.
     @if (isEnterpriseEdition && adminSettings.enableClusterBackups) {
     <km-side-nav-field [label]="projectSidenavSections.ClusterBackups"
                        icon="km-icon-cluster-backup"
+                       infoTooltip="This is an feature in Release Candidate version, use it with care and without guarantees."
                        [isSidenavCollapsed]="isSidenavCollapsed">
       @if (!isSidenavCollapsed) {
       <div [ngClass]="{'active': checkUrl(view.ClusterBackup), 'km-disabled': !isDisabledField(view.ClusterBackup)}"

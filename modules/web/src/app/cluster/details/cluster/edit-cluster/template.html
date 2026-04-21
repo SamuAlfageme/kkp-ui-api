@@ -382,9 +382,15 @@ limitations under the License.
       @if (isclusterBackupEnabled) {
       <mat-checkbox [formControlName]="Controls.ClusterBackup"
                     kmValueChangedIndicator>
-        Cluster Backup
-        <i class="km-icon-info km-pointer"
-           matTooltip="Enable create backups from this cluster"></i>
+        <div fxLayout="row"
+             fxLayoutAlign=" center"
+             fxLayoutGap="8px">
+          <span>Cluster Backup</span>
+          <i class="km-icon-info km-pointer"
+             matTooltip="Enable create backups from this cluster"></i>
+          <i class="km-icon-warning km-pointer"
+             matTooltip="This is an feature in Release Candidate version, use it with care and without guarantees."></i>
+        </div>
       </mat-checkbox>
       }
 

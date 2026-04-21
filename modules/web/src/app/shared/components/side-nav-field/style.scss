@@ -19,6 +19,8 @@
 }
 
 .collapsed-side-nav-bar {
+  align-items: center;
+  display: flex;
   margin: 0 0 10px 10px;
 }
 
@@ -66,4 +68,14 @@
   height: 150px;
   width: variables.$sidenav-width;
   z-index: 2;
+}
+
+.km-side-nav-info-icon {
+  flex-shrink: 0;
+  margin-left: -12px;
+}
+
+.km-collapsed-side-nav-info-icon {
+  flex-shrink: 0;
+  margin-left: -6px;
 }

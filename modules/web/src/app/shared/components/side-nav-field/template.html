@@ -26,6 +26,10 @@ limitations under the License.
             fxLayoutGap="20px">
         <i [class]="icon"></i>
         <span>{{label}}</span>
+        @if (infoTooltip) {
+        <span class="km-icon-warning km-pointer km-side-nav-info-icon"
+              [matTooltip]="infoTooltip"></span>
+        }
       </span>
       <i class="km-icon-mask km-icon-arrow-{{expanded ? 'up' : 'down'}}"></i>
     </a>
@@ -51,6 +55,10 @@ limitations under the License.
          [matMenuTriggerFor]="menu">
     </div>
   </button>
+  @if (infoTooltip) {
+  <span class="km-icon-warning km-pointer km-collapsed-side-nav-info-icon"
+        [matTooltip]="infoTooltip"></span>
+  }
   <mat-menu #menu="matMenu"
             [class]="'side-nav-sub-menu-item'">
     <mat-label class="menu-label">{{label}}</mat-label>
