@@ -22,6 +22,12 @@ COPY ./modules/web/_build/ /usr/local/bin/
 COPY ./modules/api/cmd/kubermatic-api/swagger.json /opt/swagger.json
 COPY ./modules/web/dist /dist
 
+### Overwrite assets
+# From Corporite Identity & Design: https://confluence.switch.ch/x/6Ow4Bg
+COPY assets/favicon-32x32.png /dist/favicon.png
+COPY assets/switch_cloud_logo_dark.svg /dist/assets/images/branding/switch_cloud_logo_dark.svg
+COPY assets/switch_cloud_logo_light.svg /dist/assets/images/branding/switch_cloud_logo_light.svg
+
 USER nobody
 
 # this default CMD is for the legacy KKP Operator, which did not

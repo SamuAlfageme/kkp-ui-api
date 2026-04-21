@@ -51,7 +51,7 @@ package-dashboard-ee:
 rebase-dashboard-ee-fork:
   stage: maintenance
   image:
-    name: cr.gitlab.switch.ch/kaas/docker-hub-mirror/alpine/git:2.52.0
+    name: cr.gitlab-int.switch.ch/sck/container-images/alpine/git:2.52.0
     entrypoint: [""]
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
