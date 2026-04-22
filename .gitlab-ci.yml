@@ -60,6 +60,8 @@ rebase-dashboard-ee-fork:
     GIT_STRATEGY: none
     TARGET_BRANCH: dashboard-ee-fork
     SOURCE_BRANCH: main
+    DOCKER_AUTH_CONFIG: >-
+      {"auths":{"cr.gitlab-int.switch.ch":{"username":"sck-container-images","password":"${CR_GITLAB_INT_REGISTRY_PASSWORD}"}}}
   script:
     - |
       if [ -z "${REBASE_PUSH_TOKEN}" ]; then
